@@ -300,8 +300,7 @@ class Coordinator:
         self.reported.clear()
 
     @mlat.profile.trackcpu
-    def input_received_messages(self, messages):
-        now = monotonic_time()
+    def input_received_messages(self, messages, now):
         for message in messages:
             handler = self.df_handlers.get(message.df)
             if handler:

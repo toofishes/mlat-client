@@ -112,7 +112,7 @@ class ReceiverConnection(ReconnectingConnection):
 
         # synthesize a mode change immediately if we are not autodetecting
         if self.reader.mode is not None:
-            self.coordinator.input_received_messages((mode_change_event(self.reader),))
+            self.coordinator.input_received_messages((mode_change_event(self.reader),), self.last_data_received)
 
         self.send_settings_message()
 
@@ -210,7 +210,7 @@ class ReceiverConnection(ReconnectingConnection):
         self.reader.received_messages = self.reader.suppressed_messages = 0
 
         if messages:
-            self.coordinator.input_received_messages(messages)
+            self.coordinator.input_received_messages(messages, self.last_data_received)
 
         if pending_error:
             # call it again to get the exception
