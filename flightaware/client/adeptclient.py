@@ -271,7 +271,8 @@ class AdeptReader(asyncore.file_dispatcher, net.LoggingMixin):
 
     def process_line(self, line):
         fields = line.split('\t')
-        message = dict(zip(fields[0::2], fields[1::2]))
+        fieldsiter = iter(fields)
+        message = dict(zip(fieldsiter, fieldsiter))
 
         handler = self.handlers.get(message['type'])
         if handler:
