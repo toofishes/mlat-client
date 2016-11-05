@@ -101,7 +101,7 @@ class Coordinator:
                 # maybe there are no active sockets and
                 # we're just waiting on a timeout
                 if asyncore.socket_map:
-                    asyncore.loop(timeout=0.1, count=5)
+                    asyncore.loop(timeout=0.1, count=5, use_poll=True)
                 else:
                     time.sleep(0.5)
 
