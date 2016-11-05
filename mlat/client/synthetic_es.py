@@ -16,9 +16,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import math
+from math import floor
 import _modes
-import bisect
+from bisect import bisect_left
 
 # It would be nice to merge this into a proper all-singing
 # all-dancing Mode S module that combined _modes, this code,
@@ -84,7 +84,6 @@ nl_table = (
     (78.33374083, 12),
     (79.29428225, 11),
     (80.24923213, 10),
-
     (81.19801349, 9),
     (82.13956981, 8),
     (83.07199445, 7),
@@ -105,15 +104,14 @@ def CPR_NL(lat):
     if lat < 0:
         lat = -lat
 
-    nl = nl_vals[bisect.bisect_left(nl_lats, lat)]
-    return nl
+    return nl_vals[bisect_left(nl_lats, lat)]
 
 
 def CPR_N(lat, odd):
     """The N function referenced in the CPR calculations: the number of longitude zones at a given latitude / oddness"""
     nl = CPR_NL(lat) - (odd and 1 or 0)
     if nl < 1:
-        nl = 1
+        return 1
     return nl
 
 
@@ -121,12 +119,15 @@ def cpr_encode(lat, lon, odd):
     """Encode an airborne position using a CPR encoding with the given odd flag value"""
 
     NbPow = 2**17
-    Dlat = 360.0 / (odd and 59 or 60)
-    YZ = int(math.floor(NbPow * (lat % Dlat) / Dlat + 0.5))
+    if odd:
+        Dlat = 360.0 / 59
+    else:
+        Dlat = 360.0 / 60
+    YZ = int(floor(NbPow * (lat % Dlat) / Dlat + 0.5))
 
-    Rlat = Dlat * (1.0 * YZ / NbPow + math.floor(lat / Dlat))
+    Rlat = Dlat * (1.0 * YZ / NbPow + floor(lat / Dlat))
     Dlon = (360.0 / CPR_N(Rlat, odd))
-    XZ = int(math.floor(NbPow * (lon % Dlon) / Dlon + 0.5))
+    XZ = int(floor(NbPow * (lon % Dlon) / Dlon + 0.5))
 
     return (YZ & 0x1FFFF), (XZ & 0x1FFFF)
 
