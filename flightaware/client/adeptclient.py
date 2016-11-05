@@ -11,6 +11,7 @@ import sys
 import itertools
 import struct
 
+import mlat.profile
 from mlat.client import net, util, stats, version
 
 # UDP protocol submessages
@@ -112,6 +113,7 @@ class UdpServerConnection:
                                 self.base_timestamp)
         self.used += STRUCT_REBASE.size
 
+    @mlat.profile.trackcpu
     def send_mlat(self, message):
         if not self.used:
             self.prepare_header(message.timestamp)
@@ -147,6 +149,7 @@ class UdpServerConnection:
         if self.used > self.mtu:
             self.flush()
 
+    @mlat.profile.trackcpu
     def send_sync(self, em, om):
         if not self.used:
             self.prepare_header(int((em.timestamp + om.timestamp) / 2))
