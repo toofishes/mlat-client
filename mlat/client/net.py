@@ -132,6 +132,7 @@ class ReconnectingConnection(LoggingMixin, asyncore.dispatcher):
 
             self.create_socket(a_family, a_type)
             self.connect(a_sockaddr)
+            self.socket.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
         except socket.error as e:
             log('Connection to {host}:{port} failed: {ex!s}', host=self.host, port=self.port, ex=e)
             self.close()
